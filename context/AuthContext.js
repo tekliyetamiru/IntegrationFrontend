@@ -63,10 +63,12 @@ export function AuthProvider({ children }) {
   };
 
   const logout = async () => {
+    console.log('Logout called');
     try {
-      await api.post('/api/logout');
+      const response = await api.post('/api/logout');
+      console.log('Logout response:', response);
     } catch (err) {
-      console.error(err);
+      console.error('Logout error:', err);
     } finally {
       setUser(null);
       router.push('/');
