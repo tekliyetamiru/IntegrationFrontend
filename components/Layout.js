@@ -12,6 +12,7 @@ export default function Layout({ children, title }) {
   const publicRoutes = ['/', '/login', '/signup'];
   const isPublicRoute = publicRoutes.includes(router.pathname);
   
+  // Only redirect if not on public route, user is not authenticated, and loading is done
   useEffect(() => {
     if (!loading && !user && !isPublicRoute) {
       router.push('/login');
@@ -26,7 +27,8 @@ export default function Layout({ children, title }) {
     );
   }
   
-  if (isPublicRoute) {
+  // For public routes, just render children without sidebar
+  if (isPublicRoute || !user) {
     return (
       <div className="min-h-screen bg-gray-50">
         <main>{children}</main>
@@ -34,6 +36,7 @@ export default function Layout({ children, title }) {
     );
   }
   
+  // For authenticated routes, show sidebar
   return (
     <div className="min-h-screen bg-gray-50">
       <Sidebar onCollapseChange={setSidebarCollapsed} />

@@ -9,8 +9,16 @@ const nextConfig = {
       },
     ];
   },
+  // Fix deprecated images.domains
   images: {
-    domains: ['huggingface.co'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'huggingface.co',
+        port: '',
+        pathname: '/**',
+      },
+    ],
   },
 };
 

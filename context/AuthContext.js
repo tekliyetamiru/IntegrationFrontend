@@ -11,20 +11,30 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const checkAuth = async () => {
+      // Don't check auth on public pages
+      const publicPages = ['/', '/login', '/signup'];
+      if (publicPages.includes(router.pathname)) {
+        setLoading(false);
+        return;
+      }
+      
       try {
         const res = await api.get('/api/me');
         setUser(res.data);
       } catch (err) {
         console.error('Auth check failed:', err);
         setUser(null);
-        // Clear any stale auth data
-        localStorage.removeItem('sidebarCollapsed');
+        // Redirect to login only if not already there
+        if (router.pathname !== '/login' && !publicPages.includes(router.pathname)) {
+          router.push('/login');
+        }
       } finally {
         setLoading(false);
       }
     };
+    
     checkAuth();
-  }, []);
+  }, [router.pathname]);
 
   const login = async (email, password) => {
     try {
@@ -38,14 +48,14 @@ export function AuthProvider({ children }) {
   };
 
   const signup = async (firstName, lastName, username, email, password) => {
-  try {
-    await api.post('/api/signup', { first_name: firstName, last_name: lastName, username, email, password });
-    return { success: true };
-  } catch (err) {
-    const errorMsg = err.response?.data?.error || 'Signup failed';
-    return { success: false, error: errorMsg };
-  }
-};
+    try {
+      await api.post('/api/signup', { first_name: firstName, last_name: lastName, username, email, password });
+      return { success: true };
+    } catch (err) {
+      const errorMsg = err.response?.data?.error || 'Signup failed';
+      return { success: false, error: errorMsg };
+    }
+  };
 
   const logout = async () => {
     try {
