@@ -40,7 +40,12 @@ export function AuthProvider({ children }) {
     try {
       const res = await api.post('/api/login', { email, password });
       setUser(res.data);
-      router.push(res.data.role === 'admin' ? '/admin/dashboard' : '/user/dashboard');
+      // Redirect to platform-specific dashboard
+      if (res.data.role === 'admin') {
+        router.push('/admin/dashboard');
+      } else {
+        router.push('/user/telegram/dashboard');
+      }
       return { success: true };
     } catch (err) {
       return { success: false, error: err.response?.data?.error || 'Login failed' };
